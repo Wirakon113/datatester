@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QA Bug Hunt Lab  |  แบบฟอร์มทดสอบข้อมูล</title>
+<title>QA Bug Hunt Lab | แบบฟอร์มทดสอบข้อมูล</title>
 <style>
 :root{
   --bg:#080b12; --panel:#111722; --panel2:#151d2b; --line:#263246;
@@ -35,6 +35,11 @@ small{display:block;color:var(--muted);margin-top:6px}.options{display:flex;flex
 .actions{display:flex;gap:12px;margin-top:26px}
 button{border:0;border-radius:11px;padding:12px 20px;font-weight:800;cursor:pointer}
 .primary{background:linear-gradient(90deg,var(--accent),#5d8cff);color:white}.secondary{background:#202b3d;color:#dfe7f5}
+.file-row{display:flex;gap:10px;align-items:center}
+.file-row input{flex:1}
+.file-clear{background:#3a2630;color:#ffb0bf;border:1px solid rgba(255,92,122,.4);white-space:nowrap}
+.file-clear:hover{background:#4a2b38}
+@media(max-width:700px){.file-row{flex-direction:column;align-items:stretch}.file-clear{width:100%}}
 #result{margin-top:18px;padding:14px;border-radius:12px;display:none}
 .success{display:block!important;background:rgba(53,212,154,.1);border:1px solid rgba(53,212,154,.35);color:#8af0c9}
 .error{display:block!important;background:rgba(255,92,122,.1);border:1px solid rgba(255,92,122,.35);color:#ffb0bf}
@@ -134,7 +139,10 @@ footer{text-align:center;color:#657186;padding:30px}
 
   <div class="group">
     <label class="label" for="file">แนบ Resume <span class="req">*</span></label>
-    <input id="file" type="file" accept=".pdf,.jpg,.jpeg,.png" required>
+    <div class="file-row">
+      <input id="file" type="file" accept=".pdf,.jpg,.jpeg,.png" required>
+      <button class="file-clear" id="clearFile" type="button">Clear File</button>
+    </div>
     <small>รองรับ PDF, JPG, PNG ขนาดไม่เกิน 5 MB</small>
   </div>
 
@@ -170,6 +178,10 @@ salary.addEventListener('input',()=>{
   salaryBadge.textContent=Math.round(Number(salary.value)/1000)+'K';
 });
 
+const fileInput=document.getElementById('file');
+const clearFile=document.getElementById('clearFile');
+clearFile.addEventListener('click',()=>{ fileInput.value=''; });
+
 form.addEventListener('submit',(e)=>{
   e.preventDefault();
   result.className='';
@@ -179,7 +191,8 @@ form.addEventListener('submit',(e)=>{
   const dob=document.getElementById('dob').value;
 
   if(name.length<5){showError('กรุณากรอกชื่อ-นามสกุลอย่างน้อย 5 ตัวอักษร');return;}
-  if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(document.getElementById('email').value)){showError('รูปแบบอีเมลไม่ถูกต้อง');return;}
+  const email=document.getElementById('email').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showError('รูปแบบอีเมลไม่ถูกต้อง');return;}
 
   /* BUG #1 (ตั้งใจใส่): Validation เบอร์โทรผิดเงื่อนไข
      ระบบควรตรวจเฉพาะตัวเลข 9-10 หลัก แต่บั๊กนี้ใช้ regex ที่ยอมรับตัวอักษร A-Z ด้วย */
